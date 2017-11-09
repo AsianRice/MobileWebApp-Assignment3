@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<!--
+Student: Calvin Cheung <cheuncal@sheridan.desire2learn.com>
+StudentID: 991370529
+Course: PROG20261
+Project: Student Registration
+-->
+<html>
+    <head>
+        <title>Student Registration</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+        <style>
+            .ui-block-a, .ui-block-b{
+                padding:20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div data-role="page" id="home">    
+
+            <header data-role="header">
+                <h1>Student Registration</h1>
+            </header>
+
+            <div data-role="content">
+                <section class="ui-grid-a">
+                    <section class="ui-block-a">  
+                        Name<br />
+                        <input type="text" name="sname" id="sname" placeholder="Student Name"><br />
+                        <div>
+                            <div data-role="range">
+                                <label for="age">Age:</label>
+                                <input type="range" name="age" id="age" min="0" max="100" value="20">
+                            </div>
+                        </div><br />
+                        <div>
+                            <fieldset>
+                                <legend>Select your Program:</legend><br />
+                                <label>
+                                    <input type="radio" name="program" value="CP" checked>
+                                    Computer Programmer</label>
+                                <label>
+                                    <input type="radio" name="program"  value="SA">
+                                    System Analyst</label>
+                                <label>
+                                    <input type="radio" name="program"  value="CST">
+                                    Network Engineering</label>
+                                <label>
+                                    <input type="radio" name="program"  value="OTHER">
+                                    Other</label>
+                            </fieldset>
+                        </div>
+                    </section>  <!-- block-a -->
+                    <div data-role="popup" id="popup">
+                    </div>
+                    <section class="ui-block-b">
+                        Campus<br />
+                        <input type="text" name="campus" id="campus" placeholder="Your Campus"><br />
+                        <div>
+                            <fieldset data-role="controlgroup" data-type="horizontal">
+                                <legend>Sex:</legend>
+                                <label>
+                                <input type="radio" name="sex" value="male" checked>
+                                Male</label>
+                                <label>
+                                <input type="radio" name="sex" value="female">
+                                Female</label>
+                            </fieldset>
+                        </div><br />
+                        
+                        <div>
+                            <fieldset>
+                                <legend>Highest Level of Education:</legend><br />
+                                <label>
+                                    <input type="radio" name="education" value="HS" checked>
+                                    High School Diploma</label>
+                                <label>
+                                    <input type="radio" name="education"  value="BS">
+                                    Bachelors</label>
+                                <label>
+                                    <input type="radio" name="education"  value="MS">
+                                    Masters</label>
+                                <label>
+                                    <input type="radio" name="education"  value="PHD">
+                                    Doctorate</label>
+                            </fieldset>
+                        </div>
+                    </section>
+                </section>    <!-- grid-a -->
+                <section class="ui-grid-solo">
+                    <a href="#popup" data-rel="popup" id="register" class="ui-btn ui-icon-action ui-btn-icon-left" data-transition="pop">Save Info</a>
+                    <!--<button id="register" class="ui-btn ui-icon-action ui-btn-icon-left">Save Info</button>-->
+                    <button id="retrieve" class="ui-btn ui-icon-action ui-btn-icon-left">Retrieve Info</button>
+                    <button id="clear" class="ui-btn ui-icon-action ui-btn-icon-left">Clear Info</button>
+                </section>
+
+            </div>          <!-- data-role=content -->
+        </div>            <!-- data-role=page -->
+
+
+        <script>
+            // Notice '#home' selector below!!
+            $(document).on("pagecreate", '#home', initApp);
+            function initApp() {
+                $sname = $("#sname");
+
+                $input = $("#home").find("input");
+
+                $campus = $("#campus");
+
+                $program = $input.filter('[name="program"]');
+                
+                $sex = $input.filter('[name="sex"]');
+
+                $education = $input.filter('[name="education"]');
+                
+                $age = $("#age");
+
+                var custom_event = $.support.touch ? 'tap' : 'click';
+
+                $("#register").on(custom_event, function () {
+
+                    var sname = $sname.val().trim();
+                    var campus = $campus.val().trim();
+                    var errors = "";
+                    console.log(errors);
+                    if (sname.length < 1) {
+                        alert('Name cannot be empty!');
+                        errors += "Name cannot be empty!";
+                        console.log(errors);
+                        return;
+                    }
+                    if (campus.length < 1){
+                        alert('Campus cannot be empty!');
+                        errors += "Campus cannot be empty!";
+                        console.log(errors);
+                        return;
+                    }
+                    localStorage.setItem('sname', sname);
+
+                    localStorage.setItem('campus', $campus.val().trim());
+                    
+                    localStorage.setItem('age', $age.val());
+                    
+                    localStorage.setItem('program', $program.filter(':checked').val());
+                    
+                    localStorage.setItem('education', $education.filter(':checked').val());
+                    
+                    localStorage.setItem('sex', $sex.filter(':checked').val());
+
+                    if(errors === ""){
+                        $("#popup").html("<p>Registration Saved</p>");
+                    }
+                    else{
+                        alert(errors);
+                    }
+
+                });
+
+
+                $("#retrieve").on("vclick", function () {
+                    var sname = localStorage.getItem('sname');
+                    
+                    if(!sname){
+                        alert("Nothing was saved...");
+                        return;
+                    }
+                    
+                    $sname.val(localStorage.getItem('sname'));
+                    $campus.val(localStorage.getItem('campus'));
+                    $age.val(localStorage.getItem('age')).slider("refresh");
+                    
+                    $program.filter('[value="'+ localStorage.getItem('program') + '"]').prop('checked', true);
+                    $program.checkboxradio("refresh");
+                    
+                    $sex.filter('[value="' + localStorage.getItem('sex') + '"]').prop('checked', true);
+                    $sex.checkboxradio("refresh");
+                    
+                    $education.filter('[value="' + localStorage.getItem('education') + '"]').prop('checked', true);
+                    $education.checkboxradio("refresh");
+                    
+
+                });
+                
+                $("#clear").on("vclick", function(){
+                   localStorage.clear();
+                   alert("Storaged cleared!");
+                });
+            }
+            ;
+        </script>
+
+    </body>
+</html>
